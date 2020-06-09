@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "eslint --ignore-path .gitignore .",
+    "test": "ava --verbose"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/GorillaEats/backend/issues"
   },
-  "homepage": "https://github.com/GorillaEats/backend#readme"
+  "homepage": "https://github.com/GorillaEats/backend#readme",
+  "devDependencies": {
+    "ava": "^3.8.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.21.1"
+  }
 }
