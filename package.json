@@ -4,6 +4,7 @@
   "description": "General API service to interact with the database",
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint --ignore-path .gitignore .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +22,8 @@
     "npm": ">=6.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.2.0"
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.21.1"
   }
 }
