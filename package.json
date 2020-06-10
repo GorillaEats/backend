@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon -r dotenv/config index.js",
     "pretest": "eslint --ignore-path .gitignore .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava --verbose",
+    "test:coverage": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,12 @@
     "npm": ">=6.0.0"
   },
   "devDependencies": {
+    "ava": "^3.8.2",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.21.1",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "nyc": "^15.1.0"
   }
 }
