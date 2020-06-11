@@ -1,0 +1,11 @@
+automatic_scaling:
+  max_instances: 5
+  min_instances: 1
+  target_cpu_utilization: 0.75
+handlers:
+  - redirect_http_response_code: 301
+    script: auto
+    secure: always
+    url: /.*
+instance_class: F1
+runtime: nodejs10
