@@ -8,11 +8,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: 10.x
+        node-version: [10.x]
 
     steps:
       - uses: actions/checkout@v2
-      - name: build-and-test
-        run: npm install
-        run: npm test
-          
+      - name: running-test-cases
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test
