@@ -32,5 +32,8 @@
     "eslint-plugin-import": "^2.21.1",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
