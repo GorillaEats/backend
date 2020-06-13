@@ -13,7 +13,7 @@ function requireUncached(module) {
 test('should use winston console logger if not in production', (t) => {
   sinon.stub(process.env, 'NODE_ENV').value('development');
 
-  const tempLogger = requireUncached('src/logger');
+  const tempLogger = requireUncached('../src/logger');
 
   t.is(tempLogger.transports.length, 1);
   t.true(tempLogger.transports[0] instanceof winston.transports.Console);
@@ -22,7 +22,7 @@ test('should use winston console logger if not in production', (t) => {
 test('should use google logger if in production', (t) => {
   sinon.stub(process.env, 'NODE_ENV').value('production');
 
-  const tempLogger = requireUncached('src/logger');
+  const tempLogger = requireUncached('../src/logger');
 
   t.is(tempLogger.transports.length, 1);
   t.true(tempLogger.transports[0] instanceof LoggingWinston);
