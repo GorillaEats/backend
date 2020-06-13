@@ -1,7 +1,8 @@
 const express = require('express');
+require('app-module-path').addPath(__dirname);
 
-const logger = require('./src/logger');
-const { errorHandler } = require('./src/api/middleware');
+const logger = require('src/logger');
+const { errorHandler } = require('src/api/middleware');
 
 const app = express();
 
