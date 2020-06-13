@@ -1,7 +1,7 @@
 const express = require('express');
 
 const logger = require('./src/logger');
-const { errorHandler } = require('./src/api/middlewares');
+const { errorHandler } = require('./src/api/middleware');
 
 const app = express();
 
