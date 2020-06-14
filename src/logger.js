@@ -5,9 +5,11 @@ const consoleOptions = {
   format: format.combine(
     format.colorize(),
     format.timestamp(),
-    format.printf(({
-      level, message, timestamp,
-    }) => `${timestamp.replace('T', ' ')} ${level}: ${message}`),
+    format.printf(/* istanbul ignore next */
+      ({
+        level, message, timestamp,
+      }) => `${timestamp.replace('T', ' ')} ${level}: ${message}`,
+    ),
   ),
 };
 
