@@ -17,6 +17,7 @@ test.beforeEach((t) => {
 
 test.afterEach(async (t) => {
   await t.context.mongod.stop();
+  sinon.restore();
 });
 
 test('should setup mongoose connection with proper uri', async (t) => {
