@@ -31,6 +31,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.21.1",
+    "mongodb-memory-server": "^6.6.1",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
     "sinon": "^9.0.2"
@@ -40,6 +41,7 @@
     "app-module-path": "^2.2.0",
     "express": "^4.17.1",
     "http-status-codes": "^1.4.0",
+    "mongoose": "^5.9.18",
     "winston": "^3.2.1"
   },
   "ava": {
