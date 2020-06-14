@@ -24,3 +24,9 @@ const logger = createLogger({
 });
 
 module.exports = logger;
+module.exports.stream = {
+  // eslint-disable-next-line no-unused-vars
+  write(message, exports) {
+    logger.info(message.slice(0, -1));
+  },
+};
