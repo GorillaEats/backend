@@ -1,4 +1,4 @@
-const { Model, Schema } = require('mongoose');
+const { model, Schema } = require('mongoose');
 const validator = require('validator');
 
 const schema = new Schema({
@@ -67,4 +67,4 @@ const schema = new Schema({
 
 schema.index({ name: 'text' });
 
-module.exports = Model('Restaurants', schema);
+module.exports = model('Restaurants', schema);
