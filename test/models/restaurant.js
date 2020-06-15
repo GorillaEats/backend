@@ -28,7 +28,7 @@ test.afterEach(async (t) => {
   await closeMongodbConnection(t.context.mongod);
 });
 
-test('updateVeganRating should properly increment vegan rating values', async (t) => {
+test('static method updateVeganRating should properly increment vegan rating values', async (t) => {
   const { restaurant } = t.context.fixture;
   const rating = 2;
   const ratingCount = 1;
@@ -45,4 +45,22 @@ test('updateVeganRating should properly increment vegan rating values', async (t
     restaurant.reviewMeta.veganRatingCount + ratingCount,
     newRestaurant.reviewMeta.veganRatingCount,
   );
+});
+
+test('Virtual property reviewMeta.veganRating should return 0 if no vegan ratings', async (t) => {
+  const { restaurant } = t.context.fixture;
+
+  t.is(restaurant.reviewMeta.veganRating, 0);
+});
+
+test('Virtual property reviewMeta.veganRating should give average', async (t) => {
+  const { restaurant } = t.context.fixture;
+  const total = 20;
+  const count = 5;
+  const average = total / count;
+
+  restaurant.reviewMeta.veganRatingTotal = total;
+  restaurant.reviewMeta.veganRatingCount = count;
+
+  t.is(restaurant.reviewMeta.veganRating, average);
 });
