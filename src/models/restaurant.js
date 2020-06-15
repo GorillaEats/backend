@@ -65,6 +65,18 @@ const schema = new Schema({
   },
 });
 
+schema.statics.updateVeganRating = function updateVeganRating(_id, ratingTotal, ratingCount) {
+  return this.updateOne(
+    { _id },
+    {
+      $inc: {
+        'reviewMeta.veganRatingTotal': ratingTotal,
+        'reviewMeta.veganRatingCount': ratingCount,
+      },
+    },
+  );
+};
+
 schema.index({ name: 'text' });
 
 module.exports = model('Restaurants', schema);
