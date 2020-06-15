@@ -7,5 +7,7 @@ handlers:
     script: auto
     secure: always
     url: /.*
+includes:
+  - secret.yaml
 instance_class: F1
 runtime: nodejs10

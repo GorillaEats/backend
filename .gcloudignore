@@ -5,3 +5,4 @@
 #!include:.gitignore
 README.md
 test
+!secret.yaml
