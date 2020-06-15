@@ -28,7 +28,7 @@ test.afterEach(async (t) => {
   await closeMongodbConnection(t.context.mongod);
 });
 
-test('static method updateVeganRating should properly increment vegan rating values', async (t) => {
+test('Static method updateVeganRating should properly increment vegan rating values', async (t) => {
   const { restaurant } = t.context.fixture;
   const rating = 2;
   const ratingCount = 1;
