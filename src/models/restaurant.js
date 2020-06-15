@@ -13,18 +13,14 @@ const schema = new Schema({
     required: true,
     index: true,
     unique: true,
-    validate: {
-      validator: validator.isURL,
-    },
+    validate: validator.isURL,
   },
   allowedDomain: {
     type: String,
     required: true,
     index: true,
     unique: true,
-    validate: {
-      validator: validator.isURL,
-    },
+    validate: validator.isURL,
   },
   allow: { type: String, required: true },
   reviewMeta: {
@@ -32,26 +28,20 @@ const schema = new Schema({
       type: Number,
       default: 0,
       min: 0,
-      validate: {
-        validator: Number.isInteger,
-      },
+      validate: Number.isInteger,
     },
     veganRatingCount: {
       type: Number,
       default: 0,
       min: 0,
-      validate: {
-        validator: Number.isInteger,
-      },
+      validate: Number.isInteger,
     },
   },
   locationCount: {
     type: Number,
     default: 0,
     min: 0,
-    validate: {
-      validator: Number.isInteger,
-    },
+    validate: Number.isInteger,
   },
 });
 
