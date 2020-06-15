@@ -9,9 +9,11 @@ test.beforeEach(async (t) => {
 
   const restaurant = new Restaurant({
     name: 'Chipotle',
-    url: 'https://locations.chipotle.com/',
-    allowedDomain: 'locations.chipotle.com',
-    allow: '(/|(/[a-z]{2}(|\\.html|(/[a-zA-Z]+(?:[-][a-zA-Z]+)*(|\\.html|/[a-zA-Z0-9-]+(|\\.html))))))$',
+    spider: {
+      url: 'https://locations.chipotle.com/',
+      allowedDomain: 'locations.chipotle.com',
+      allow: '(/|(/[a-z]{2}(|\\.html|(/[a-zA-Z]+(?:[-][a-zA-Z]+)*(|\\.html|/[a-zA-Z0-9-]+(|\\.html))))))$',
+    },
   });
   await restaurant.save();
 

@@ -8,21 +8,19 @@ const schema = new Schema({
     index: true,
     unique: true,
   },
-  url: {
-    type: String,
-    required: true,
-    index: true,
-    unique: true,
-    validate: validator.isURL,
+  spider: {
+    url: {
+      type: String,
+      index: true,
+      validate: validator.isURL,
+    },
+    allowedDomain: {
+      type: String,
+      index: true,
+      validate: validator.isURL,
+    },
+    allow: String,
   },
-  allowedDomain: {
-    type: String,
-    required: true,
-    index: true,
-    unique: true,
-    validate: validator.isURL,
-  },
-  allow: { type: String, required: true },
   reviewMeta: {
     veganRatingTotal: {
       type: Number,
