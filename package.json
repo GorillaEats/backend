@@ -34,13 +34,15 @@
     "mongodb-memory-server": "^6.6.1",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "@google-cloud/logging-winston": "^3.0.6",
     "app-module-path": "^2.2.0",
     "express": "^4.17.1",
     "http-status-codes": "^1.4.0",
+    "morgan": "^1.10.0",
     "mongoose": "^5.9.18",
     "winston": "^3.2.1"
   },
