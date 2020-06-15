@@ -14,11 +14,7 @@ const schema = new Schema({
     index: true,
     unique: true,
     validate: {
-      validator: (value) => validator.isURL(value, {
-        protocols: ['http', 'https'],
-        require_protocol: true,
-      }),
-      message: (props) => `${props.value} is not a proper URL`,
+      validator: validator.isURL,
     },
   },
   allowedDomain: {
@@ -27,10 +23,7 @@ const schema = new Schema({
     index: true,
     unique: true,
     validate: {
-      validator: (value) => validator.isURL(value, {
-        require_protocol: false,
-      }),
-      message: (props) => `${props.value} is not a proper URL`,
+      validator: validator.isURL,
     },
   },
   allow: { type: String, required: true },
@@ -41,7 +34,6 @@ const schema = new Schema({
       min: 0,
       validate: {
         validator: Number.isInteger,
-        message: (props) => `${props.value} is not an integer value`,
       },
     },
     veganRatingCount: {
@@ -50,7 +42,6 @@ const schema = new Schema({
       min: 0,
       validate: {
         validator: Number.isInteger,
-        message: (props) => `${props.value} is not an integer value`,
       },
     },
   },
@@ -60,7 +51,6 @@ const schema = new Schema({
     min: 0,
     validate: {
       validator: Number.isInteger,
-      message: (props) => `${props.value} is not an integer value`,
     },
   },
 });
