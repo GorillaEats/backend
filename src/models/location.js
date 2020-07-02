@@ -46,6 +46,7 @@ const schema = new Schema({
   restaurantId: {
     type: mongoose.ObjectId,
     required: true,
+    index: true,
     ref: 'Restaurant',
   },
   telephone: {
