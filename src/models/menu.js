@@ -9,4 +9,4 @@ const schema = new Schema({
   source: { type: String, required: true },
 });
 
-module.exports = model('Menus', schema);
+module.exports = model('Menu', schema);
