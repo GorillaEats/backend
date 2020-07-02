@@ -65,4 +65,4 @@ schema.virtual('reviewMeta.veganRating').get(function getVeganRating() {
   return this.reviewMeta.veganRatingTotal / this.reviewMeta.veganRatingCount;
 });
 
-module.exports = model('Restaurants', schema);
+module.exports = model('Restaurant', schema);
