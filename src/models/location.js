@@ -44,6 +44,7 @@ const schema = new Schema({
   },
   priceRange: {
     type: String,
+    required: true,
   },
   restaurantId: {
     type: mongoose.ObjectId,
