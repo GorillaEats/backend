@@ -7,19 +7,16 @@ const { model, Schema } = mongoose;
 
 const schema = new Schema({
   geo: {
-    latitude: {
-      type: {
-        type: String,
-        enum: ['Point'],
-        required: true,
-      },
-      coordinates: {
-        type: [Number],
-        required: true,
-        index: '2dsphere',
-      },
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
     },
-    longitude: {},
+    coordinates: {
+      type: [Number],
+      required: true,
+      index: '2dsphere',
+    },
   },
   lastScraperRun: {
     type: Date,
