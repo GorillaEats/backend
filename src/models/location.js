@@ -6,10 +6,6 @@ const Restaurant = require('./restaurant');
 const { model, Schema } = mongoose;
 
 const schema = new Schema({
-  active: {
-    type: Boolean,
-    required: true,
-  },
   geo: {
     latitude: {
       type: {
