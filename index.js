@@ -3,7 +3,7 @@ require('app-module-path').addPath(__dirname);
 
 const setupDB = require('src/loaders/mongoose');
 const logger = require('src/logger');
-const { errorHandler, httpLogger } = require('src/api/middleware');
+const { queryParser, errorHandler, httpLogger } = require('src/api/middleware');
 const { location } = require('src/api/routes');
 
 const app = express();
@@ -13,10 +13,11 @@ setupDB();
 const PORT = process.env.PORT || 8080;
 
 // Middleware Pre Routes
+app.set('query parser', queryParser);
 app.use(httpLogger);
 
 // Routes
-app.use(location);
+app.use(location.PATH, location.router);
 
 // Middleware Post Routes
 app.use(errorHandler);
