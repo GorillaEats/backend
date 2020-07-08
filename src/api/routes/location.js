@@ -19,9 +19,9 @@ router.get('/', async (req, res) => {
         $nearSphere: {
           $geometry: {
             type: 'Point',
-            coordinates: filter.geo.$near.$geometry.coordinates,
+            coordinates: filter.geo.$nearSphere.$geometry.coordinates,
           },
-          $maxDistance: Math.min(filter.geo.$near.$maxDistance, MAX_DISTANCE_METERS),
+          $maxDistance: Math.min(filter.geo.$nearSphere.$maxDistance, MAX_DISTANCE_METERS),
           $minDistance: 0,
         },
       };
