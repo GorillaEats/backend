@@ -15,7 +15,6 @@ const schema = new Schema({
     coordinates: {
       type: [Number],
       required: true,
-      index: '2dsphere',
     },
   },
   lastScraperRun: {
@@ -70,6 +69,8 @@ const schema = new Schema({
     validate: validator.isURL,
   },
 });
+
+schema.index({ geo: '2dsphere' });
 
 schema.statics.updateVeganRating = function updateVeganRating(
   _id, restaurantId, ratingTotal, ratingCount,
