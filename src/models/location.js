@@ -6,6 +6,28 @@ const Restaurant = require('./restaurant');
 const { model, Schema } = mongoose;
 
 const schema = new Schema({
+  address: {
+    addressLocality: {
+      type: String,
+      required: true,
+    },
+    streetAddress: {
+      type: String,
+      required: true,
+    },
+    addressRegion: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+    addressCountry: {
+      type: String,
+      required: true,
+    },
+  },
   geo: {
     type: {
       type: String,

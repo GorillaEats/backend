@@ -10,6 +10,13 @@ test.beforeEach(async (t) => {
   const mongod = await setupMongodbConnection();
 
   const location = new Location({
+    address: {
+      addressLocality: 'Cheyenne Laramie',
+      streetAddress: '1508 Dell Range Blvd',
+      addressRegion: 'WY',
+      postalCode: '82009',
+      addressCountry: 'US',
+    },
     geo: {
       type: 'Point',
       coordinates: [
