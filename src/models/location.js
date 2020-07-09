@@ -22,7 +22,7 @@ const schema = new Schema({
     postalCode: {
       type: String,
       required: true,
-      validate: validator.isPostalCode,
+      validate: (value) => validator.isPostalCode(value, 'any'),
     },
     addressCountry: {
       type: String,
