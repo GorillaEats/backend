@@ -27,3 +27,5 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   logger.info(`Listening on Port ${PORT}`);
 });
+
+module.exports = app;
