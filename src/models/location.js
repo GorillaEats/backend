@@ -31,7 +31,22 @@ const schema = new Schema({
     required: true,
   },
   openingHours: {
-    type: [[Number]],
+    type: [{
+      start: {
+        type: Number,
+        min: 0,
+        max: 7 * 24 * 60,
+        required: true,
+        validate: Number.isInteger,
+      },
+      end: {
+        type: Number,
+        min: 0,
+        max: 7 * 24 * 60,
+        required: true,
+        validate: Number.isInteger,
+      },
+    }],
     required: true,
   },
   priceRange: {
