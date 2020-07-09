@@ -1,9 +1,7 @@
 const express = require('express');
 const { celebrate, Joi, Segments } = require('celebrate');
-const validator = require('validator');
 
 const Location = require('src/models/location.js');
-const { mongo } = require('mongoose');
 
 const PATH = '/locations';
 const MAX_DOCUMENTS = 25;
