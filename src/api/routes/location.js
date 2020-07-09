@@ -76,7 +76,9 @@ router.get('/',
       };
     }
 
-    const locations = await Location.find(mongoFilter, null, options);
+    const locations = await Location
+      .find(mongoFilter, null, options)
+      .lean();
     res.json({ locations });
   });
 
