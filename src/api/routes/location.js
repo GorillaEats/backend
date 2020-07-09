@@ -14,30 +14,11 @@ router.get('/',
   celebrate({
     [Segments.QUERY]: Joi.object().keys({
       filter: Joi.object().keys({
-        geo: Joi.object().keys({
-          $nearSphere: Joi.object().keys({
-            $geometry: Joi.object().keys({
-              type: Joi.string().valid('Point').default('Point'),
-              coordinates: Joi
-                .array()
-                .items(Joi.number())
-                .length(2)
-                .required()
-                .custom((value, helpers) => {
-                  if (validator.isLatLong(`${value[1]},${value[0]}`)) {
-                    return value;
-                  }
-                  return helpers.error('any.invalid');
-                }),
-            }),
-            $minDistance: Joi.number().valid(0).default(0),
-            $maxDistance: Joi
-              .number()
-              .max(MAX_DISTANCE_METERS)
-              .min(0)
-              .required(),
-          }),
-        }),
+        lat: Joi.number().max(90).min(-90).required(),
+        long: Joi.number().max(180).min(-180).required(),
+        radius: Joi.number().max(MAX_DISTANCE_METERS).min(0).required(),
+        veganRating: Joi.number().valid(2.5, 3.5, 4.5),
+        open: Joi.number().integer().max(7 * 24 * 60).min(0),
       }).required(),
       options: Joi.object().keys({
         limit: Joi
@@ -51,7 +32,41 @@ router.get('/',
   }),
   async (req, res) => {
     const { filter, options } = req.query;
-    const locations = await Location.find(filter, null, options);
+    const mongoFilter = {};
+
+    // Required filters
+    mongoFilter.geo = {
+      $nearSphere: {
+        $geometry: {
+          type: 'Point',
+          coordinates: [filter.long, filter.lat],
+        },
+        $maxDistance: filter.radius,
+        $minDistance: 0,
+      },
+    };
+
+    // Optional filters
+    if (filter.veganRating) {
+      mongoFilter.$expr = {
+        $gte: [
+          {
+            $cond: [
+              {
+                $eq: ['$reviewMeta.veganRatingCount', 0],
+              },
+              0,
+              {
+                $divide: ['$reviewMeta.veganRatingTotal', '$reviewMeta.veganRatingCount'],
+              },
+            ],
+          },
+          filter.veganRating,
+        ],
+      };
+    }
+
+    const locations = await Location.find(mongoFilter, null, options);
     res.json({ locations });
   });
 
