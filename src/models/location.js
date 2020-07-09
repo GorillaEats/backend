@@ -6,6 +6,30 @@ const Restaurant = require('./restaurant');
 const { model, Schema } = mongoose;
 
 const schema = new Schema({
+  address: {
+    addressLocality: {
+      type: String,
+      required: true,
+    },
+    streetAddress: {
+      type: String,
+      required: true,
+    },
+    addressRegion: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+      validate: (value) => validator.isPostalCode(value, 'any'),
+    },
+    addressCountry: {
+      type: String,
+      required: true,
+      validate: validator.isISO31661Alpha2,
+    },
+  },
   geo: {
     type: {
       type: String,
@@ -15,7 +39,6 @@ const schema = new Schema({
     coordinates: {
       type: [Number],
       required: true,
-      index: '2dsphere',
     },
   },
   lastScraperRun: {
@@ -32,7 +55,22 @@ const schema = new Schema({
     required: true,
   },
   openingHours: {
-    type: [[Number]],
+    type: [{
+      start: {
+        type: Number,
+        min: 0,
+        max: 7 * 24 * 60,
+        required: true,
+        validate: Number.isInteger,
+      },
+      end: {
+        type: Number,
+        min: 0,
+        max: 7 * 24 * 60,
+        required: true,
+        validate: Number.isInteger,
+      },
+    }],
     required: true,
   },
   priceRange: {
@@ -70,6 +108,8 @@ const schema = new Schema({
     validate: validator.isURL,
   },
 });
+
+schema.index({ geo: '2dsphere' });
 
 schema.statics.updateVeganRating = function updateVeganRating(
   _id, restaurantId, ratingTotal, ratingCount,
