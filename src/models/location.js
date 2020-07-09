@@ -22,10 +22,12 @@ const schema = new Schema({
     postalCode: {
       type: String,
       required: true,
+      validate: validator.isPostalCode,
     },
     addressCountry: {
       type: String,
       required: true,
+      validate: validator.isISO31661Alpha2,
     },
   },
   geo: {
