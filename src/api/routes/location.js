@@ -3,6 +3,7 @@ const { celebrate, Joi, Segments } = require('celebrate');
 const validator = require('validator');
 
 const Location = require('src/models/location.js');
+const { mongo } = require('mongoose');
 
 const PATH = '/locations';
 const MAX_DOCUMENTS = 25;
@@ -47,6 +48,15 @@ router.get('/',
     };
 
     // Optional filters
+    if (filter.open) {
+      mongoFilter.openingHours = {
+        $elemMatch: {
+          start: { $lte: filter.open },
+          end: { $gte: filter.open },
+        },
+      };
+    }
+
     if (filter.veganRating) {
       mongoFilter.$expr = {
         $gte: [
