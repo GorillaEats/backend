@@ -38,7 +38,7 @@ router.get('/',
               .required(),
           }),
         }),
-      }),
+      }).required(),
       options: Joi.object().keys({
         limit: Joi
           .number()
