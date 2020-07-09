@@ -1,4 +1,5 @@
 const express = require('express');
+const { errors } = require('celebrate');
 require('app-module-path').addPath(__dirname);
 
 const setupDB = require('src/loaders/mongoose');
@@ -20,6 +21,7 @@ app.use(httpLogger);
 app.use(location.PATH, location.router);
 
 // Middleware Post Routes
+app.use(errors());
 app.use(errorHandler);
 
 app.listen(PORT, () => {
