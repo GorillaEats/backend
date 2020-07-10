@@ -1,4 +1,4 @@
-const { serial: test } = require('ava');
+const test = require('ava');
 const sinon = require('sinon');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');

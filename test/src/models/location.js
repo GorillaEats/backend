@@ -1,4 +1,4 @@
-const { serial: test } = require('ava');
+const test = require('ava');
 const sinon = require('sinon');
 
 require('../../util/absolutePath');
