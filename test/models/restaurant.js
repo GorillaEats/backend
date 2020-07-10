@@ -1,37 +1,25 @@
 const test = require('ava');
 
 require('../util/absolutePath');
-const { setupMongodbConnection, closeMongodbConnection } = require('test/util/mongoose');
+const TestDB = require('test/util/mongoose');
 const Restaurant = require('src/models/restaurant');
 
 test.beforeEach(async (t) => {
-  const mongod = await setupMongodbConnection();
-
-  const restaurant = new Restaurant({
-    name: 'Chipotle',
-    spider: {
-      url: 'https://locations.chipotle.com/',
-      allowedDomain: 'locations.chipotle.com',
-      allow: '(/|(/[a-z]{2}(|\\.html|(/[a-zA-Z]+(?:[-][a-zA-Z]+)*(|\\.html|/[a-zA-Z0-9-]+(|\\.html))))))$',
-    },
-  });
-  await restaurant.save();
+  const testDb = new TestDB();
+  await testDb.setup({ seed: true });
 
   // eslint-disable-next-line no-param-reassign
   t.context = {
-    fixture: {
-      restaurant,
-    },
-    mongod,
+    testDb,
   };
 });
 
 test.afterEach(async (t) => {
-  await closeMongodbConnection(t.context.mongod);
+  await t.context.testDb.cleanup();
 });
 
 test('Static method updateVeganRating should properly increment vegan rating values', async (t) => {
-  const { restaurant } = t.context.fixture;
+  const restaurant = t.context.testDb.data.Restaurant[0];
   const rating = 2;
   const ratingCount = 1;
 
@@ -50,13 +38,13 @@ test('Static method updateVeganRating should properly increment vegan rating val
 });
 
 test('Virtual property reviewMeta.veganRating should return 0 if no vegan ratings', async (t) => {
-  const { restaurant } = t.context.fixture;
+  const restaurant = t.context.testDb.data.Restaurant[0];
 
   t.is(restaurant.reviewMeta.veganRating, 0);
 });
 
 test('Virtual property reviewMeta.veganRating should give average', async (t) => {
-  const { restaurant } = t.context.fixture;
+  const restaurant = t.context.testDb.data.Restaurant[0];
   const total = 20;
   const count = 5;
   const average = total / count;
