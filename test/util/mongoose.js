@@ -12,6 +12,7 @@ class TestDB {
     await Promise.all(modelNames.map(async (modelName) => {
       if (seedData[modelName]) {
         const Model = Models[modelName];
+        await Model.ensureIndexes();
         await Model.insertMany(seedData[modelName]);
         data[modelName] = await Model.find({});
       } else {
@@ -26,7 +27,10 @@ class TestDB {
     const mongod = new MongoMemoryServer();
     const mongoUri = await mongod.getUri();
     await mongoose.connect(mongoUri, {
+      autoCreate: true,
+      autoIndex: true,
       useCreateIndex: true,
+      useFindAndModify: false,
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
