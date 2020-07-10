@@ -1,4 +1,4 @@
-const test = require('ava');
+const { serial: test } = require('ava');
 
 require('../util/absolutePath');
 const { setupMongodbConnection, closeMongodbConnection } = require('test/util/mongoose');
