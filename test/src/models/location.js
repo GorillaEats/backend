@@ -1,63 +1,27 @@
 const { serial: test } = require('ava');
 const sinon = require('sinon');
 
-require('../util/absolutePath');
-const { setupMongodbConnection, closeMongodbConnection } = require('test/util/mongoose');
+require('../../util/absolutePath');
+const TestDB = require('test/util/mongoose');
 const Location = require('src/models/location');
 const Restaurant = require('src/models/restaurant');
 
 test.beforeEach(async (t) => {
-  const mongod = await setupMongodbConnection();
-
-  const location = new Location({
-    address: {
-      addressLocality: 'Cheyenne Laramie',
-      streetAddress: '1508 Dell Range Blvd',
-      addressRegion: 'WY',
-      postalCode: '82009',
-      addressCountry: 'US',
-    },
-    geo: {
-      type: 'Point',
-      coordinates: [
-        -104.80569895096562,
-        41.160718013799844,
-      ],
-    },
-    lastScraperRun: Date.now(),
-    menuId: '5edd5e127b9d38823bba8533',
-    name: 'Chipotle Cheyenne',
-    openingHours: [
-      { start: 645, end: 1260 },
-      { start: 2085, end: 2700 },
-      { start: 3525, end: 4140 },
-      { start: 4965, end: 5580 },
-      { start: 6405, end: 7020 },
-      { start: 7845, end: 8460 },
-      { start: 9285, end: 9900 },
-    ],
-    priceRange: '$',
-    restaurantId: '5edd5e127b9d38823bba8533',
-    telephone: '(307) 632-6200',
-    url: 'https://locations.chipotle.com/wy/cheyenne/1508-dell-range-blvd',
-  });
-  await location.save();
+  const testDb = new TestDB();
+  await testDb.setup({ seed: true });
 
   // eslint-disable-next-line no-param-reassign
   t.context = {
-    fixture: {
-      location,
-    },
-    mongod,
+    testDb,
   };
 });
 
 test.afterEach(async (t) => {
-  await closeMongodbConnection(t.context.mongod);
+  await t.context.testDb.cleanup();
 });
 
 test('Static method updateVeganRating should properly increment vegan rating values', async (t) => {
-  const { location } = t.context.fixture;
+  const location = t.context.testDb.data.Location[0];
   const rating = 2;
   const ratingCount = 1;
 
@@ -79,13 +43,13 @@ test('Static method updateVeganRating should properly increment vegan rating val
 });
 
 test('Virtual property reviewMeta.veganRating should return 0 if no vegan ratings', async (t) => {
-  const { location } = t.context.fixture;
+  const location = t.context.testDb.data.Location[0];
 
   t.is(location.reviewMeta.veganRating, 0);
 });
 
 test('Virtual property reviewMeta.veganRating should give average', async (t) => {
-  const { location } = t.context.fixture;
+  const location = t.context.testDb.data.Location[0];
   const total = 20;
   const count = 5;
   const average = total / count;
