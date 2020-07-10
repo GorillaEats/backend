@@ -1,6 +1,6 @@
 const test = require('ava');
 
-require('../util/absolutePath');
+require('../../util/absolutePath');
 const TestDB = require('test/util/mongoose');
 const Restaurant = require('src/models/restaurant');
 

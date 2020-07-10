@@ -1,7 +1,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 
-require('../util/absolutePath');
+require('../../util/absolutePath');
 const TestDB = require('test/util/mongoose');
 const Location = require('src/models/location');
 const Restaurant = require('src/models/restaurant');
