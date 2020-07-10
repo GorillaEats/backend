@@ -22,7 +22,7 @@ class TestDB {
     this.data = data;
   }
 
-  async setupMongodbConnection(options = {}) {
+  async setup(options = {}) {
     const mongod = new MongoMemoryServer();
     const mongoUri = await mongod.getUri();
     await mongoose.connect(mongoUri, {
@@ -38,7 +38,7 @@ class TestDB {
     this.mongod = mongod;
   }
 
-  async closeMongodbConnection() {
+  async cleanup() {
     await this.mongod.stop();
   }
 }
