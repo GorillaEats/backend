@@ -9,7 +9,8 @@
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "ava --verbose",
     "test:coverage": "nyc npm run test",
-    "test:check-coverage": "npm run test:coverage && nyc check-coverage --lines 90 --branches 90 --statements 90 --functions 90"
+    "test:check-coverage": "npm run test:coverage && nyc check-coverage --lines 90 --branches 90 --statements 90 --functions 90",
+    "scrape": "node scraper/index.js"
   },
   "repository": {
     "type": "git",
