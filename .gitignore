@@ -117,3 +117,6 @@ dist
 
 # GAE secret refrences
 secret.yaml
+
+# apify output
+apify_storage

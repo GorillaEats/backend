@@ -10,7 +10,7 @@
     "test": "ava --verbose",
     "test:coverage": "nyc npm run test",
     "test:check-coverage": "npm run test:coverage && nyc check-coverage --lines 90 --branches 90 --statements 90 --functions 90",
-    "scrape": "node scraper/index.js"
+    "scraper": "node -r dotenv/config scraper/index.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "npm": ">=6.0.0"
   },
   "devDependencies": {
+    "apify": "^0.21.0",
     "ava": "^3.8.2",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
