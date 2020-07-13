@@ -16,7 +16,7 @@ router.get('/',
         lat: Joi.number().max(90).min(-90).required(),
         long: Joi.number().max(180).min(-180).required(),
         radius: Joi.number().max(MAX_DISTANCE_METERS).min(0).required(),
-        veganRating: Joi.number().valid(2.5, 3.5, 4.5),
+        veganRating: Joi.number().valid(3.5, 4.0, 4.5),
         open: Joi.number().integer().max(7 * 24 * 60).min(0),
       }).required(),
       options: Joi.object().keys({
