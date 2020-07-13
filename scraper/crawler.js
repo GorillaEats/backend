@@ -1,22 +1,32 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 const Apify = require('apify');
+const Microdata = require('microdata-node');
 
 const { Location } = require('src/models/index');
 
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 0;
 
 async function createCrawler(restaurant) {
   const { url, allow } = restaurant.spider;
   const requestQueue = await Apify.openRequestQueue();
 
   await requestQueue.addRequest({
-    url: restaurant.spider.url,
+    url: 'https://locations.chipotle.com/tx/college-station/815-university-dr', // restaurant.spider.url,
     userData: {
       depth: 0,
     },
   });
 
-  const handlePageFunction = async ({ request, $ }) => {
+  const handleLocationMicrodata = async (data) => {
+
+  };
+
+  const handlePageFunction = async ({ request, $, body }) => {
+    const data = Microdata.toJson(body, request.loadedUrl);
+
+    await Apify.pushData(data);
+    await handleLocationMicrodata(data);
+
     if (request.userData.depth < MAX_DEPTH) {
       await Apify.utils.enqueueLinks({
         $,
