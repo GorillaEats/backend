@@ -7,8 +7,12 @@ const { Location } = require('src/models/index');
 
 const MAX_DEPTH = 0;
 
-const handleLocationMicrodata = async (data) => {
-  console.log(JSON.stringify(data, null, 2));
+const handleLocationMicrodata = async (data, url) => {
+  const withoutDup = removeDuplicates(data);
+
+  console.log(JSON.stringify(withoutDup, null, 2));
+  console.log(url);
+  await Apify.pushData(withoutDup);
 };
 
 async function createCrawler(restaurant) {
@@ -27,8 +31,7 @@ async function createCrawler(restaurant) {
     const restaurantData = getRestaurantData(data);
 
     if (restaurantData) {
-      await Apify.pushData(restaurantData);
-      await handleLocationMicrodata(restaurantData);
+      await handleLocationMicrodata(restaurantData, request.url);
     }
 
     if (request.userData.depth < MAX_DEPTH) {
