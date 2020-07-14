@@ -5,7 +5,7 @@ require('app-module-path').addPath(__dirname);
 const setupDB = require('src/loaders/mongoose');
 const logger = require('src/logger');
 const { queryParser, errorHandler, httpLogger } = require('src/api/middleware');
-const { location } = require('src/api/routes');
+const { location, restaurant } = require('src/api/routes');
 
 const app = express();
 
@@ -19,6 +19,7 @@ app.use(httpLogger);
 
 // Routes
 app.use(location.PATH, location.router);
+app.use(restaurant.PATH, restaurant.router);
 
 // Middleware Post Routes
 app.use(errors());
