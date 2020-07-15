@@ -5,8 +5,9 @@ const mongoose = require('mongoose');
 
 const { removeDuplicates, getRestaurantData, parseOpeningHours } = require('scraper/util');
 const { Location } = require('src/models/index');
+const logger = require('src/logger');
 
-const MAX_DEPTH = 0;
+const MAX_DEPTH = 3;
 
 const handleLocationMicrodata = async (restaurant, data, url) => {
   const withoutDup = removeDuplicates(data);
@@ -14,7 +15,7 @@ const handleLocationMicrodata = async (restaurant, data, url) => {
   const address = properties.address[0].properties;
   const geo = properties.geo[0].properties;
 
-  const location = new Location({
+  const doc = {
     address: {
       addressLocality: address.addressLocality[0],
       streetAddress: address.streetAddress[0],
@@ -30,17 +31,19 @@ const handleLocationMicrodata = async (restaurant, data, url) => {
       ],
     },
     lastScraperRun: Date.now(),
-    menuId: mongoose.Types.ObjectId(),
+    menuId: mongoose.Types.ObjectId(), // TODO should be restaurant default menu id
     name: properties.name[0],
     openingHours: parseOpeningHours(properties.openingHours),
     priceRange: properties.priceRange[0],
     restaurantId: restaurant.id,
     telephone: properties.telephone[0],
     url: properties.url ? properties.url[0] : url,
-  });
+  };
+  const filter = { address: doc.address };
+  const options = { upsert: true };
 
   await Promise.all([
-    location.save(),
+    Location.updateOne(filter, doc, options),
     Apify.pushData(withoutDup),
   ]);
 };
@@ -50,7 +53,7 @@ async function createCrawler(restaurant) {
   const requestQueue = await Apify.openRequestQueue(Date.now().toString());
 
   await requestQueue.addRequest({
-    url: 'https://locations.chipotle.com/tx/college-station/815-university-dr', // restaurant.spider.url,
+    url: restaurant.spider.url,
     userData: {
       depth: 0,
     },
@@ -60,17 +63,16 @@ async function createCrawler(restaurant) {
     const data = Microdata.toJson(body, request.loadedUrl);
     const restaurantData = getRestaurantData(data);
 
+    logger.debug(`handlePageFunction: ${request.loadedUrl}`);
+
     if (restaurantData) {
       await handleLocationMicrodata(restaurant, restaurantData, request.url);
-    }
-
-    if (request.userData.depth < MAX_DEPTH) {
+    } else if (request.userData.depth < MAX_DEPTH) {
       await Apify.utils.enqueueLinks({
         $,
         requestQueue,
         baseUrl: url,
         pseudoUrls: [new RegExp(allow)],
-        limit: 5,
         transformRequestFunction: (oldReq) => {
           const newReq = oldReq;
           newReq.userData.depth = request.userData.depth + 1;
