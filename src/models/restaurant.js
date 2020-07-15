@@ -1,7 +1,14 @@
-const { model, Schema } = require('mongoose');
+const mongoose = require('mongoose');
 const validator = require('validator');
 
+const { model, Schema } = mongoose;
+
 const schema = new Schema({
+  defaultMenuId: {
+    type: mongoose.ObjectId,
+    required: true,
+    ref: 'Menu',
+  },
   name: {
     type: String,
     required: true,
