@@ -1,6 +1,8 @@
 const express = require('express');
 const { celebrate, Joi, Segments } = require('celebrate');
 
+const Restaurant = require('src/models/restaurant.js');
+
 const PATH = '/restaurant';
 
 const router = express.Router();
@@ -8,15 +10,21 @@ const router = express.Router();
 router.get('/:id',
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().custom((value, helpers) => {
-        if (!value || !String(value).match(/^[0-9a-fA-F]{24}$/)) { return helpers.error('any.invalid'); }
+      id: Joi.string().custom((id, helpers) => {
+        if (!id || !String(id).match(/^[0-9a-fA-F]{24}$/)) { return helpers.error('any.invalid'); }
 
-        return { value };
+        return { id };
       }, 'custom validation'),
     }),
   }),
-  (req, res) => {
-    res.send('works');
+  async (req, res) => {
+    const { id } = req.params.id;
+
+    const restaurant = await Restaurant
+      .findById(id)
+      .lean();
+
+    res.json({ restaurant });
   });
 
 module.exports = {
