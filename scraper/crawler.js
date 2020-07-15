@@ -9,7 +9,7 @@ const logger = require('src/logger');
 
 const MAX_DEPTH = 3;
 
-const handleLocationMicrodata = async (restaurant, data, url) => {
+const handleLocationMicrodata = async (restaurant, data, url, currentDate) => {
   const withoutDup = removeDuplicates(data);
   const { properties } = data;
   const address = properties.address[0].properties;
@@ -30,7 +30,7 @@ const handleLocationMicrodata = async (restaurant, data, url) => {
         geo.latitude[0],
       ],
     },
-    lastScraperRun: Date.now(),
+    lastScraperRun: currentDate,
     menuId: mongoose.Types.ObjectId(), // TODO should be restaurant default menu id
     name: properties.name[0],
     openingHours: parseOpeningHours(properties.openingHours),
@@ -49,8 +49,9 @@ const handleLocationMicrodata = async (restaurant, data, url) => {
 };
 
 async function createCrawler(restaurant) {
+  const currentDate = Date.now();
   const { url, allow } = restaurant.spider;
-  const requestQueue = await Apify.openRequestQueue(Date.now().toString());
+  const requestQueue = await Apify.openRequestQueue(currentDate.toString());
 
   await requestQueue.addRequest({
     url: restaurant.spider.url,
@@ -66,7 +67,7 @@ async function createCrawler(restaurant) {
     logger.debug(`handlePageFunction: ${request.loadedUrl}`);
 
     if (restaurantData) {
-      await handleLocationMicrodata(restaurant, restaurantData, request.url);
+      await handleLocationMicrodata(restaurant, restaurantData, request.url, currentDate);
     } else if (request.userData.depth < MAX_DEPTH) {
       await Apify.utils.enqueueLinks({
         $,
