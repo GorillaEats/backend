@@ -11,6 +11,15 @@ const ACCEPTED_SCHEMAS = [
   'http://schema.org/Restaurant',
   'http://schema.org/Winery',
 ];
+const WEEKDAYS_TO_OFFSET = {
+  Su: 0,
+  Mo: 1,
+  Tu: 2,
+  We: 3,
+  Th: 4,
+  Fr: 5,
+  Sa: 6,
+};
 
 function isStrictObject(obj) {
   return Object.prototype.toString.call(obj) === '[object Object]';
@@ -52,4 +61,51 @@ function removeDuplicates(obj) {
   return obj;
 }
 
-module.exports = { removeDuplicates, getRestaurantData };
+function parseOpeningHours(hours) {
+  const intervals = [];
+  hours.forEach((hour) => {
+    let weekdayCode;
+    let startHours = 0;
+    let startMinutes = 0;
+    let endHours = 24;
+    let endMinutes = 0;
+
+    if (hour.includes('Closed')) {
+      return null;
+    } if (hour.includes('All Day')) {
+      weekdayCode = hour.substring(0, 2);
+    } else {
+      weekdayCode = hour.substring(0, 2);
+      startHours = parseInt(hour.substring(3, 5), 10);
+      startMinutes = parseInt(hour.substring(6, 8), 10);
+      endHours = parseInt(hour.substring(9, 11), 10);
+      endMinutes = parseInt(hour.substring(12, 14), 10);
+    }
+
+    const offset = WEEKDAYS_TO_OFFSET[weekdayCode] * 24 * 60;
+    const startValue = startHours * 60 + startMinutes + offset;
+    let endValue = endHours * 60 + endMinutes + offset;
+
+    // adjust end value if it occurs before or at same time as start value
+    if (endValue <= startValue) {
+      endValue += 24 * 60;
+    }
+
+    intervals.push({
+      start: startValue,
+      end: endValue,
+    });
+
+    intervals.sort((intervalA, intervalB) => intervalA.start - intervalB.end);
+
+    return intervals;
+  });
+
+  return intervals;
+}
+
+module.exports = {
+  removeDuplicates,
+  getRestaurantData,
+  parseOpeningHours,
+};
