@@ -2,6 +2,7 @@
   "Restaurant": [
     {
       "_id": "5edd5c283b22bb4f1437c827",
+      "defaultMenuId": "5edd5e127b9d38823bba8533",
       "name": "Chipotle",
       "spider": {
         "url": "https://locations.chipotle.com/",
