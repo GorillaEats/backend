@@ -22,7 +22,8 @@ test(`GET ${PATH}/:id should return restaurant by id`, async (t) => {
   const restaurant = JSON.parse(JSON.stringify(app.testDb.data.Restaurant[0]));
 
   const res = await request(app.expressApp)
-    .get(`${PATH}/5edd5c283b22bb4f1437c827`);
+    // eslint-disable-next-line no-underscore-dangle
+    .get(`${PATH}/${restaurant._id}`);
 
   const resRestaurant = res.body.restaurant;
 
