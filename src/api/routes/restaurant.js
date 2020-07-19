@@ -13,12 +13,12 @@ router.get('/:id',
       id: Joi.string().custom((id, helpers) => {
         if (!id || !String(id).match(/^[0-9a-fA-F]{24}$/)) { return helpers.error('any.invalid'); }
 
-        return { id };
+        return id;
       }, 'custom validation'),
     }),
   }),
   async (req, res) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
 
     const restaurant = await Restaurant
       .findById(id)
