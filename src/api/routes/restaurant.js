@@ -3,7 +3,7 @@ const { celebrate, Joi, Segments } = require('celebrate');
 
 const Restaurant = require('src/models/restaurant.js');
 
-const PATH = '/restaurant';
+const PATH = '/restaurants';
 
 const router = express.Router();
 
