@@ -6,6 +6,7 @@
       "name": "Chipotle",
       "spider": {
         "url": "https://locations.chipotle.com/",
+        "maxDepth": 3,
         "allow": "https:\\/\\/locations\\.chipotle\\.com.*"
       }
     }
