@@ -1,92 +1,64 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const Apify = require('apify');
-const Microdata = require('microdata-node');
-const mongoose = require('mongoose');
+const Crawler = require('crawler');
+const Seenreq = require('seenreq');
 
-const { removeDuplicates, getRestaurantData, parseOpeningHours } = require('scraper/util');
-const { Location } = require('src/models/index');
-const logger = require('src/logger');
+const { extractUrlsFromCheerio, extractLocationDoc } = require('./util');
 
-const MAX_DEPTH = 3;
+class LocationCrawler {
+  constructor(context) {
+    this.handleRequest = this.handleRequest.bind(this);
 
-const handleLocationMicrodata = async (restaurant, data, url, currentDate) => {
-  const withoutDup = removeDuplicates(data);
-  const { properties } = data;
-  const address = properties.address[0].properties;
-  const geo = properties.geo[0].properties;
+    this.seen = new Seenreq();
+    this.context = context;
+    this.crawler = new Crawler({
+      jQuery: true,
+      callback: this.handleRequest,
+    });
+  }
 
-  const doc = {
-    address: {
-      addressLocality: address.addressLocality[0],
-      streetAddress: address.streetAddress[0],
-      addressRegion: address.addressRegion[0],
-      postalCode: address.postalCode[0],
-      addressCountry: address.addressCountry[0],
-    },
-    geo: {
-      type: 'Point',
-      coordinates: [
-        geo.longitude[0],
-        geo.latitude[0],
-      ],
-    },
-    lastScraperRun: currentDate,
-    menuId: mongoose.Types.ObjectId(), // TODO should be restaurant default menu id
-    name: properties.name[0],
-    openingHours: parseOpeningHours(properties.openingHours),
-    priceRange: properties.priceRange[0],
-    restaurantId: restaurant.id,
-    telephone: properties.telephone[0],
-    url: properties.url ? properties.url[0] : url,
-  };
-  const filter = { address: doc.address };
-  const options = { upsert: true };
+  async initialize() {
+    await this.seen.initialize();
+    await this.seen.exists(this.context.startURL);
+    this.crawler.queue(this.context.startURL);
+  }
 
-  await Promise.all([
-    Location.updateOne(filter, doc, options),
-    Apify.pushData(withoutDup),
-  ]);
-};
+  async dispose() {
+    await this.seen.dispose();
+  }
 
-async function createCrawler(restaurant) {
-  const currentDate = Date.now();
-  const { url, allow } = restaurant.spider;
-  const requestQueue = await Apify.openRequestQueue(currentDate.toString());
+  async handleRequest(error, res, done) {
+    if (error) {
+      console.log(error);
+    } else {
+      const { $, request: { uri } } = res;
+      const normalizedSign = this.seen.normalize(uri.href).sign;
+      console.log(normalizedSign);
 
-  await requestQueue.addRequest({
-    url: restaurant.spider.url,
-    userData: {
-      depth: 0,
-    },
-  });
+      const childUrls = extractUrlsFromCheerio($, uri.href)
+        .filter((childUrl) => this.context.regexFilter.test(childUrl));
 
-  const handlePageFunction = async ({ request, $, body }) => {
-    const data = Microdata.toJson(body, request.loadedUrl);
-    const restaurantData = getRestaurantData(data);
+      const seenResults = await this.seen.exists(childUrls);
 
-    logger.debug(`handlePageFunction: ${request.loadedUrl}`);
-
-    if (restaurantData) {
-      await handleLocationMicrodata(restaurant, restaurantData, request.url, currentDate);
-    } else if (request.userData.depth < MAX_DEPTH) {
-      await Apify.utils.enqueueLinks({
-        $,
-        requestQueue,
-        baseUrl: url,
-        pseudoUrls: [new RegExp(allow)],
-        transformRequestFunction: (oldReq) => {
-          const newReq = oldReq;
-          newReq.userData.depth = request.userData.depth + 1;
-          return newReq;
-        },
+      childUrls.forEach((childUrl, index) => {
+        if (!seenResults[index]) {
+          this.crawler.queue(childUrl);
+        }
       });
     }
-  };
+    done();
+  }
 
-  return new Apify.CheerioCrawler({
-    requestQueue,
-    handlePageFunction,
-  });
+  async run() {
+    const that = this;
+    await new Promise(((res) => {
+      that.crawler.on('drain', async () => {
+        await this.dispose();
+        res();
+      });
+
+      that.initialize();
+    }));
+  }
 }
 
-module.exports = createCrawler;
+module.exports = LocationCrawler;

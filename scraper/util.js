@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const { URL } = require('url');
 
 const ACCEPTED_SCHEMAS = [
   'http://schema.org/CafeOrCoffeeShop',
@@ -21,10 +21,6 @@ const WEEKDAYS_TO_OFFSET = {
   Sa: 6,
 };
 
-function isStrictObject(obj) {
-  return Object.prototype.toString.call(obj) === '[object Object]';
-}
-
 function getRestaurantData(raw) {
   if (raw && raw.items) {
     const { items } = raw;
@@ -37,28 +33,6 @@ function getRestaurantData(raw) {
     }
   }
   return null;
-}
-
-function removeDuplicates(obj) {
-  if (Array.isArray(obj)) {
-    const arr = [];
-    for (let i = 0; i < obj.length; i += 1) {
-      arr.push(removeDuplicates(obj[i]));
-    }
-
-    return _.uniqWith(arr, _.isEqual);
-  } if (isStrictObject(obj)) {
-    const newObj = {};
-    const keys = Object.keys(obj);
-
-    for (let i = 0; i < keys.length; i += 1) {
-      const key = keys[i];
-      newObj[key] = removeDuplicates(obj[key]);
-    }
-
-    return newObj;
-  }
-  return obj;
 }
 
 function parseOpeningHours(hours) {
@@ -104,8 +78,59 @@ function parseOpeningHours(hours) {
   return intervals;
 }
 
+function extractLocationDoc(data, restaurant) {
+  const { properties } = data;
+  const address = properties.address[0].properties;
+  const geo = properties.geo[0].properties;
+
+  const doc = {
+    address: {
+      addressLocality: address.addressLocality[0],
+      streetAddress: address.streetAddress[0],
+      addressRegion: address.addressRegion[0],
+      postalCode: address.postalCode[0],
+      addressCountry: address.addressCountry[0],
+    },
+    geo: {
+      type: 'Point',
+      coordinates: [
+        geo.longitude[0],
+        geo.latitude[0],
+      ],
+    },
+    lastScraperRun: Date.now(),
+    menuId: restaurant.defaultMenuId,
+    name: properties.name[0],
+    openingHours: parseOpeningHours(properties.openingHours),
+    priceRange: properties.priceRange[0],
+    restaurantId: restaurant.id,
+    telephone: properties.telephone[0],
+    url: properties.url ? properties.url[0] : url,
+  };
+
+  return doc;
+}
+
+function extractUrlsFromCheerio($, baseUrl) {
+  return $('a')
+    .map((i, el) => $(el).attr('href'))
+    .get()
+    .filter((href) => !!href)
+    .map((href) => {
+      const isHrefAbsolute = /^[a-z][a-z0-9+.-]*:/.test(href); // Grabbed this in 'is-absolute-url' package.
+      if (!isHrefAbsolute && !baseUrl) {
+        throw new Error(`An extracted URL: ${href} is relative and options.baseUrl is not set. `
+              + 'Use options.baseUrl in utils.enqueueLinks() to automatically resolve relative URLs.');
+      }
+      return baseUrl
+        ? (new URL(href, baseUrl)).href
+        : href;
+    });
+}
+
 module.exports = {
-  removeDuplicates,
   getRestaurantData,
   parseOpeningHours,
+  extractUrlsFromCheerio,
+  extractLocationDoc,
 };

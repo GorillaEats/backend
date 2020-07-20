@@ -1,20 +1,23 @@
-require('../index');
-const { Restaurant } = require('src/models/index');
-const createCrawler = require('scraper/crawler');
+require('app-module-path').addPath(`${__dirname}/../`);
+const setupDB = require('src/loaders/mongoose');
+const LocationCrawler = require('./crawler');
 
 async function main() {
+  console.log('main');
   try {
-    const restaurants = await Restaurant.find();
+    await setupDB();
 
-    await Promise.all(restaurants.map(async (restaurant) => {
-      const crawler = await createCrawler(restaurant);
-      await crawler.run();
-    }));
+    const startURL = 'https://locations.chipotle.com/';
+    const regexFilter = /https:\/\/locations\.chipotle\.com.*/;
 
-    process.exit(0);
-  } catch (err) {
+    const crawler = new LocationCrawler({ startURL, regexFilter });
+    await crawler.run();
+  } catch (error) {
+    console.error(error);
     process.exit(1);
   }
+
+  process.exit(0);
 }
 
 main();
