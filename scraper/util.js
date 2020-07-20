@@ -105,7 +105,7 @@ function extractLocationDoc(data, restaurant) {
     priceRange: properties.priceRange[0],
     restaurantId: restaurant.id,
     telephone: properties.telephone[0],
-    url: properties.url ? properties.url[0] : url,
+    url: properties.url[0],
   };
 
   return doc;

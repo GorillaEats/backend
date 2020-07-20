@@ -1,15 +1,22 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const Crawler = require('crawler');
 const Seenreq = require('seenreq');
+const Microdata = require('microdata-node');
 
-const { extractUrlsFromCheerio, extractLocationDoc } = require('./util');
+const Location = require('src/models/location');
+
+const {
+  extractUrlsFromCheerio,
+  extractLocationDoc,
+  getRestaurantData,
+} = require('./util');
 
 class LocationCrawler {
-  constructor(context) {
+  constructor(restaurant) {
     this.handleRequest = this.handleRequest.bind(this);
 
     this.seen = new Seenreq();
-    this.context = context;
+    this.restaurant = restaurant;
     this.crawler = new Crawler({
       jQuery: true,
       callback: this.handleRequest,
@@ -18,8 +25,8 @@ class LocationCrawler {
 
   async initialize() {
     await this.seen.initialize();
-    await this.seen.exists(this.context.startURL);
-    this.crawler.queue(this.context.startURL);
+    await this.seen.exists(this.restaurant.spider.url);
+    this.crawler.queue(this.restaurant.spider.url);
   }
 
   async dispose() {
@@ -30,22 +37,37 @@ class LocationCrawler {
     if (error) {
       console.log(error);
     } else {
-      const { $, request: { uri } } = res;
-      const normalizedSign = this.seen.normalize(uri.href).sign;
-      console.log(normalizedSign);
+      const { $, request: { uri }, body } = res;
+      console.log(uri.href);
 
-      const childUrls = extractUrlsFromCheerio($, uri.href)
-        .filter((childUrl) => this.context.regexFilter.test(childUrl));
+      const data = Microdata.toJson(body, uri.href);
+      const restaurantData = getRestaurantData(data);
 
-      const seenResults = await this.seen.exists(childUrls);
+      if (restaurantData) {
+        const doc = extractLocationDoc(restaurantData, this.restaurant);
+        const filter = { address: doc.address };
+        const options = { upsert: true };
 
-      childUrls.forEach((childUrl, index) => {
-        if (!seenResults[index]) {
-          this.crawler.queue(childUrl);
-        }
-      });
+        await Location.updateOne(filter, doc, options);
+        console.log(doc);
+      } else {
+        await this.enqueueLinks($, uri.href);
+      }
     }
     done();
+  }
+
+  async enqueueLinks($, baseURL) {
+    const childUrls = extractUrlsFromCheerio($, baseURL)
+      .filter((childUrl) => (new RegExp(this.restaurant.spider.allow)).test(childUrl));
+
+    const seenResults = await this.seen.exists(childUrls);
+
+    childUrls.forEach((childUrl, index) => {
+      if (!seenResults[index]) {
+        this.crawler.queue(childUrl);
+      }
+    });
   }
 
   async run() {
