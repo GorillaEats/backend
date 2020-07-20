@@ -2,6 +2,7 @@
 const Crawler = require('crawler');
 const Seenreq = require('seenreq');
 const Microdata = require('microdata-node');
+const robotsParser = require('robots-parser');
 
 const Location = require('src/models/location');
 const logger = require('src/logger');
@@ -25,9 +26,16 @@ class LocationCrawler {
   }
 
   async initialize() {
+    this.robots = robotsParser(`${this.restaurant.spider.url}robots.txt`);
+
     await this.seen.initialize();
     await this.seen.exists(this.restaurant.spider.url);
-    this.crawler.queue(this.restaurant.spider.url);
+    this.crawler.queue({
+      uri: this.restaurant.spider.url,
+      userData: {
+        depth: 0,
+      },
+    });
   }
 
   async dispose() {
@@ -38,7 +46,9 @@ class LocationCrawler {
     if (error) {
       logger.error(error);
     } else {
-      const { $, request: { uri }, body } = res;
+      const {
+        $, request: { uri }, body, options: { userData },
+      } = res;
       logger.debug(uri.href);
 
       const data = Microdata.toJson(body, uri.href);
@@ -51,23 +61,34 @@ class LocationCrawler {
 
         await Location.updateOne(filter, doc, options);
       } else {
-        await this.enqueueLinks($, uri.href);
+        await this.enqueueLinks($, uri.href, userData);
       }
     }
     done();
   }
 
-  async enqueueLinks($, baseURL) {
+  async enqueueLinks($, baseURL, userData) {
     const childUrls = extractUrlsFromCheerio($, baseURL)
       .filter((childUrl) => (new RegExp(this.restaurant.spider.allow)).test(childUrl));
 
     const seenResults = await this.seen.exists(childUrls);
 
-    childUrls.forEach((childUrl, index) => {
-      if (!seenResults[index]) {
-        this.crawler.queue(childUrl);
-      }
-    });
+    if (this.restaurant.spider.maxDepth >= userData.depth + 1) {
+      childUrls.forEach((childUrl, index) => {
+        if (this.robots && this.robots.isDisallowed(childUrl)) {
+          return;
+        }
+
+        if (!seenResults[index]) {
+          this.crawler.queue({
+            uri: childUrl,
+            userData: {
+              depth: userData.depth + 1,
+            },
+          });
+        }
+      });
+    }
   }
 
   async run() {
