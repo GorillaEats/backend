@@ -21,11 +21,6 @@ const schema = new Schema({
       index: true,
       validate: validator.isURL,
     },
-    allowedDomain: {
-      type: String,
-      index: true,
-      validate: validator.isURL,
-    },
     allow: String,
   },
   reviewMeta: {
