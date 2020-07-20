@@ -4,6 +4,7 @@ const Seenreq = require('seenreq');
 const Microdata = require('microdata-node');
 
 const Location = require('src/models/location');
+const logger = require('src/logger');
 
 const {
   extractUrlsFromCheerio,
@@ -35,10 +36,10 @@ class LocationCrawler {
 
   async handleRequest(error, res, done) {
     if (error) {
-      console.log(error);
+      logger.error(error);
     } else {
       const { $, request: { uri }, body } = res;
-      console.log(uri.href);
+      logger.debug(uri.href);
 
       const data = Microdata.toJson(body, uri.href);
       const restaurantData = getRestaurantData(data);
@@ -49,7 +50,6 @@ class LocationCrawler {
         const options = { upsert: true };
 
         await Location.updateOne(filter, doc, options);
-        console.log(doc);
       } else {
         await this.enqueueLinks($, uri.href);
       }

@@ -1,10 +1,10 @@
 require('app-module-path').addPath(`${__dirname}/../`);
 const setupDB = require('src/loaders/mongoose');
+const logger = require('src/logger');
 const { Restaurant } = require('src/models');
 const LocationCrawler = require('./crawler');
 
 async function main() {
-  console.log('main');
   try {
     await setupDB();
 
@@ -15,7 +15,7 @@ async function main() {
       await crawler.run();
     }));
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     process.exit(1);
   }
 
