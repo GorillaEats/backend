@@ -71,7 +71,7 @@ function parseOpeningHours(hours) {
         end: endValue,
       });
 
-      intervals.sort((intervalA, intervalB) => intervalA.start - intervalB.end);
+      intervals.sort((intervalA, intervalB) => intervalA.start - intervalB.start);
 
       return intervals;
     });
