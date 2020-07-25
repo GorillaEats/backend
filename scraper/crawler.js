@@ -57,7 +57,10 @@ class LocationCrawler {
       if (restaurantData) {
         const doc = extractLocationDoc(restaurantData, this.restaurant);
         const filter = { address: doc.address };
-        const options = { upsert: true };
+        const options = {
+          upsert: true,
+          setDefaultsOnInsert: true,
+        };
 
         await Location.updateOne(filter, doc, options);
       } else {
