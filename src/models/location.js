@@ -50,14 +50,6 @@ const schema = new Schema({
     required: true,
     ref: 'Menu',
   },
-  menuMeta: {
-    numOfItems: {
-      type: Number,
-      default: 0,
-      min: 0,
-      validate: Number.isInteger,
-    },
-  },
   name: {
     type: String,
     required: true,
