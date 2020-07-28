@@ -20,13 +20,18 @@ const schema = new Schema({
       type: String,
       index: true,
       validate: validator.isURL,
+      required: true,
     },
-    allowedDomain: {
+    maxDepth: {
+      type: Number,
+      validate: Number.isInteger,
+      min: 0,
+      required: true,
+    },
+    allow: {
       type: String,
-      index: true,
-      validate: validator.isURL,
+      required: true,
     },
-    allow: String,
   },
   reviewMeta: {
     veganRatingTotal: {

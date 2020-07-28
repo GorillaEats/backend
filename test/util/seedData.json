@@ -6,8 +6,8 @@
       "name": "Chipotle",
       "spider": {
         "url": "https://locations.chipotle.com/",
-        "allowedDomain": "locations.chipotle.com",
-        "allow": "(/|(/[a-z]{2}(|\\.html|(/[a-zA-Z]+(?:[-][a-zA-Z]+)*(|\\.html|/[a-zA-Z0-9-]+(|\\.html))))))$"
+        "maxDepth": 3,
+        "allow": "https:\\/\\/locations\\.chipotle\\.com.*"
       }
     }
   ],

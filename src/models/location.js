@@ -110,6 +110,7 @@ const schema = new Schema({
 });
 
 schema.index({ geo: '2dsphere' });
+schema.index({ address: 1 });
 
 schema.statics.updateVeganRating = function updateVeganRating(
   _id, restaurantId, ratingTotal, ratingCount,
