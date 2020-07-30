@@ -1,7 +1,7 @@
 const express = require('express');
 const { celebrate, Joi, Segments } = require('celebrate');
 
-const Location = require('src/models/location.js');
+const { Location } = require('src/models');
 
 const PATH = '/locations';
 const MAX_DOCUMENTS = 25;
@@ -76,6 +76,7 @@ router.get('/',
 
     const locations = await Location
       .find(mongoFilter, null, options)
+      .populate('menuId')
       .lean();
     res.json({ locations });
   });
