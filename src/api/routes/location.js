@@ -18,6 +18,15 @@ router.get('/',
         radius: Joi.number().max(MAX_DISTANCE_METERS).min(0).required(),
         veganRating: Joi.number().valid(3.5, 4.0, 4.5),
         open: Joi.number().integer().max(7 * 24 * 60).min(0),
+        price: Joi.string().max('$,$$,$$$,$$$$'.length).custom((value, helpers) => {
+          for (let i = 0; i < value.length; i += 1) {
+            if (!(value[i] === '$' || value[i] === ',')) {
+              return helpers.error('any.invalid');
+            }
+          }
+
+          return value.split(',');
+        }),
       }).required(),
       options: Joi.object().keys({
         limit: Joi
@@ -72,6 +81,10 @@ router.get('/',
           filter.veganRating,
         ],
       };
+    }
+
+    if (filter.price) {
+      mongoFilter.priceRange = { $in: filter.price };
     }
 
     const locations = await Location

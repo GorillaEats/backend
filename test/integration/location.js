@@ -51,3 +51,39 @@ test(`GET ${PATH} should return locations with proper rating`, async (t) => {
 
   t.is(res.body.locations.length, 0);
 });
+
+test(`GET ${PATH} should return locations with correct priceRange`, async (t) => {
+  const { app } = t.context;
+  const location = JSON.parse(JSON.stringify(app.testDb.data.Location[0]));
+
+  const res = await request(app.expressApp)
+    .get(PATH)
+    .query({
+      'filter.lat': location.geo.coordinates[1],
+      'filter.long': location.geo.coordinates[0],
+      'filter.radius': 0,
+      'filter.price': '$,$$,$$$',
+    });
+
+  const resLocation = res.body.locations[0];
+
+  // eslint-disable-next-line no-underscore-dangle
+  t.is(location._id, resLocation._id);
+});
+
+test(`GET ${PATH} should return error with invalid price field`, async (t) => {
+  const { app } = t.context;
+  const location = JSON.parse(JSON.stringify(app.testDb.data.Location[0]));
+
+  const res = await request(app.expressApp)
+    .get(PATH)
+    .query({
+      'filter.lat': location.geo.coordinates[1],
+      'filter.long': location.geo.coordinates[0],
+      'filter.radius': 0,
+      'filter.price': '$,asdf,a',
+    });
+
+  // eslint-disable-next-line no-underscore-dangle
+  t.is(res.status, 400);
+});
