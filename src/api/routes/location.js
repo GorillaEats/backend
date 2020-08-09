@@ -90,6 +90,7 @@ router.get('/',
     const locations = await Location
       .find(mongoFilter, null, options)
       .populate('menuId')
+      .populate('restaurantId')
       .lean();
     res.json({ locations });
   });
